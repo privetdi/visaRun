@@ -93,7 +93,7 @@ const REGIONS = {
 let mapList = new Map();
 function getCoordinatFile() {
   let fm = FileManager.iCloud();
-  let file = fm.joinPath(fm.documentsDirectory(), "vizRun.txt");
+  let file = fm.joinPath(fm.documentsDirectory(), "coordinates.txt");
   let str = fm.readString(file);
   let arr = "[" + str.slice(0, -1) + "]";
   let res = JSON.parse(arr);
@@ -146,7 +146,6 @@ function vizRun(location) {
               `${item.year}-${item.month}-${item.day}`
             )
           ) {
-            console.log("TRUE" + history.hisotyDayList);
             history.hisotyDayList.push(
               `${item.year}-${item.month}-${item.day}`
             );
@@ -155,7 +154,6 @@ function vizRun(location) {
             );
             if (history.region !== item.region) {
               if (REGIONS[history.region].cooldown.escResetCoolDown) {
-                console.log("RESET COOLDOWN 1");
                 regionNow[history.region].dayList = [];
               }
               history.region = item.region;
@@ -170,6 +168,7 @@ function vizRun(location) {
             for (let element of keys) {
               console.log(item.region + "1111");
               console.log(regionNow[element].dayList.length);
+              console.log(item.fullDate);
 
               if (element !== item.region) {
                 //день региона не соответствует текущему
@@ -194,23 +193,23 @@ function vizRun(location) {
                   //регион содержит данный день
                 }
               } else {
-                //день региона соответствует текущему
+                //текущий регион соответствует вчерашнему
                 //ПРОВЕРИТЬ
-                if (REGIONS[element].cooldown.escResetCoolDown) {
+                /*                 if (REGIONS[element].cooldown.escResetCoolDown) {
                   regionNow[element].dayList = [];
                   regionNow[element].dayList.push(
                     `${item.year}-${item.month}-${item.day}`
                   );
-                } else {
-                  if (
-                    !regionNow[element].dayList.includes(
-                      `${item.year}-${item.month}-${item.day}`
-                    )
-                  ) {
-                    regionNow[element].dayList.push(
-                      `${item.year}-${item.month}-${item.day}`
-                    );
-                  }
+                } else { */
+                if (
+                  !regionNow[element].dayList.includes(
+                    `${item.year}-${item.month}-${item.day}`
+                  )
+                ) {
+                  regionNow[element].dayList.push(
+                    `${item.year}-${item.month}-${item.day}`
+                  );
+                  /*   } */
                 }
               }
             }
