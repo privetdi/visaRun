@@ -245,6 +245,8 @@ function comparisonDate(Pdate1, Pdate2) {
 let testDate = comparisonDate("2023-03-20", "2023-04-10");
 RegionList(coordinats);
 
+//++++++++++++car++++++++++++
+
 //++++++++++++рисовалка++++++++++++
 const width = 25;
 const h = 5;
