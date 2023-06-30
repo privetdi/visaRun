@@ -8,5 +8,4 @@ Pet-project не завершен, доробатывается.
 
 
 
-![Иллюстрация к проекту]
-(https://github.com/privetdi/visaRun/raw/master/IMG_1353.png)
+![Image alt](https://github.com/privetdi/visaRun/raw/master/IMG_1353.png)
