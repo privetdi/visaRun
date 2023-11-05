@@ -67,7 +67,7 @@ const REGIONS = {
       entered: "Грузия",
     },
     howLongDay: null,
-    maximumStay: 90,
+    maximumStay: 60,
     car: {
       isCar: true,
       cooldown: {
@@ -93,7 +93,7 @@ const REGIONS = {
 let mapList = new Map();
 function getCoordinatFile() {
   let fm = FileManager.iCloud();
-  let file = fm.joinPath(fm.documentsDirectory(), "vizRun.txt");
+  let file = fm.joinPath(fm.documentsDirectory(), "coordinates.txt");
   let str = fm.readString(file);
   let arr = "[" + str.slice(0, -1) + "]";
   let res = JSON.parse(arr);
@@ -146,7 +146,6 @@ function vizRun(location) {
               `${item.year}-${item.month}-${item.day}`
             )
           ) {
-            console.log("TRUE" + history.hisotyDayList);
             history.hisotyDayList.push(
               `${item.year}-${item.month}-${item.day}`
             );
@@ -155,7 +154,6 @@ function vizRun(location) {
             );
             if (history.region !== item.region) {
               if (REGIONS[history.region].cooldown.escResetCoolDown) {
-                console.log("RESET COOLDOWN 1");
                 regionNow[history.region].dayList = [];
               }
               history.region = item.region;
@@ -164,13 +162,9 @@ function vizRun(location) {
             }
           } else {
             //если этот день есть
-            console.log("FALSE" + history.hisotyDayList);
 
             let keys = Object.keys(regionNow);
             for (let element of keys) {
-              console.log(item.region + "1111");
-              console.log(regionNow[element].dayList.length);
-
               if (element !== item.region) {
                 //день региона не соответствует текущему
                 if (REGIONS[element].cooldown.escResetCoolDown) {
@@ -188,29 +182,27 @@ function vizRun(location) {
                   regionNow[element].dayList.push(
                     `${item.year}-${item.month}-${item.day}`
                   );
-                  console.log(element + "2222");
-                  console.log(regionNow[element].dayList.length);
                 } else {
                   //регион содержит данный день
                 }
               } else {
-                //день региона соответствует текущему
+                //текущий регион соответствует вчерашнему
                 //ПРОВЕРИТЬ
-                if (REGIONS[element].cooldown.escResetCoolDown) {
+                /*                 if (REGIONS[element].cooldown.escResetCoolDown) {
                   regionNow[element].dayList = [];
                   regionNow[element].dayList.push(
                     `${item.year}-${item.month}-${item.day}`
                   );
-                } else {
-                  if (
-                    !regionNow[element].dayList.includes(
-                      `${item.year}-${item.month}-${item.day}`
-                    )
-                  ) {
-                    regionNow[element].dayList.push(
-                      `${item.year}-${item.month}-${item.day}`
-                    );
-                  }
+                } else { */
+                if (
+                  !regionNow[element].dayList.includes(
+                    `${item.year}-${item.month}-${item.day}`
+                  )
+                ) {
+                  regionNow[element].dayList.push(
+                    `${item.year}-${item.month}-${item.day}`
+                  );
+                  /*   } */
                 }
               }
             }
@@ -222,8 +214,6 @@ function vizRun(location) {
     },
     { region: null, hisotyDayList: [] }
   );
-  console.log("Грузия " + regionNow["Грузия"].dayList);
-  console.log("Турция " + regionNow["Турция"].dayList);
   return regionNow;
 }
 
@@ -249,13 +239,25 @@ RegionList(coordinats);
 //++++++++++++рисовалка++++++++++++
 const width = 25;
 const h = 5;
-const widget = new ListWidget(coordinats);
-widget.backgroundColor = new Color("#222222");
+const widget = new ListWidget(coordinats); //new ListWidget(coordinats);
+widget.backgroundColor = new Color(
+  Device.isUsingDarkAppearance() ? "#252525" : "#86A8CF"
+);
 let regionsNow = vizRun(coordinats);
 
 let keys = Object.keys(regionsNow);
 
 for (let element of keys) {
+  console.log(REGIONS[element].cooldown.day);
+  if (
+    regionsNow[element].dayList.length >
+    0.5 * REGIONS[element].cooldown.day
+  ) {
+    let a = new Notification();
+    a.title = REGIONS[element].lable + " " + regionsNow[element].dayList.length;
+    a.schedule().then();
+  }
+
   newTextWidget(
     element,
     regionsNow[element].dayList.length,
@@ -266,15 +268,22 @@ for (let element of keys) {
 function newTextWidget(region, day, lable) {
   const stack = widget.addStack();
   const titlew1 = stack.addText(region);
-  titlew1.textColor = new Color("#ffffff"); //e587ce
+
+  titlew1.textColor = new Color(
+    Device.isUsingDarkAppearance() ? "#ffffff" : "#1B3358"
+  ); //e587ce ffffff
   titlew1.font = Font.boldSystemFont(13);
   const titlew2 = stack.addText("" + lable);
-  titlew2.textColor = new Color("#ffffff"); //e587ce
+  titlew2.textColor = new Color(
+    Device.isUsingDarkAppearance() ? "#ffffff" : "#1B3358"
+  ); //e587ce
   titlew2.font = Font.boldSystemFont(13);
   widget.addSpacer(6);
 
   const titlew3 = widget.addText("" + day);
-  titlew3.textColor = new Color("#ffffff"); //e587ce
+  titlew3.textColor = new Color(
+    Device.isUsingDarkAppearance() ? "#ffffff" : "#1B3358"
+  ); //e587ce
   titlew3.font = Font.boldSystemFont(13);
   widget.addSpacer(6);
 }
